@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FactGuard - Community Vote</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .vote-card {
+            border: none;
+            border-left: 5px solid #0d6efd;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .fade-out {
+            transition: opacity 0.5s ease;
+            opacity: 0;
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+<div class="container py-5">
+    <h1 class="mb-4 text-center text-primary">FactGuard Community Vote</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} text-center">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% if urls %}
+        {% for url in urls %}
+            <div class="card vote-card mb-3 p-3">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a href="{{ url.url }}" target="_blank" class="text-decoration-none text-primary">
+                            {{ url.url[:70] ~ ('...' if url.url|length > 70 else '') }}
+                        </a>
+                    </h5>
+                    <p class="card-text text-muted">{{ url.description }}</p>
+                    <form method="POST" action="/vote" class="d-flex flex-column flex-md-row gap-2 align-items-start mt-3">
+                        <input type="hidden" name="url" value="{{ url.url }}">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="vote_type" id="legit-{{ loop.index }}" value="legit" required>
+                            <label class="form-check-label" for="legit-{{ loop.index }}">Legit</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="vote_type" id="fake-{{ loop.index }}" value="fake" required>
+                            <label class="form-check-label" for="fake-{{ loop.index }}">Fake</label>
+                        </div>
+                        <button type="submit" class="btn btn-outline-primary ms-md-3">Submit Vote</button>
+                    </form>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-info text-center">No community posts available for voting.</div>
+    {% endif %}
+</div>
+
+</body>
+</html>
